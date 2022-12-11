@@ -111,9 +111,8 @@ export function playMusic(activeAudio, audio, fftSize, playBtn) {
     requestAnimationFrame(animate);
   };
   animate();
-
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
   if (!activeAudio) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
     audioSource = audioContext.createMediaElementSource(audio);
     analyzerMusic = audioContext.createAnalyser();
     audioSource.connect(analyzerMusic);
@@ -126,12 +125,12 @@ export function playMusic(activeAudio, audio, fftSize, playBtn) {
   }
 
   if (audio.paused) {
-    console.log(12);
     playBtn.classList.remove("play");
     playBtn.classList.add("pause");
 
     audio.play();
     snail.style.visibility = "visible";
+
     // setButton("pause");
   } else {
     console.log(11);
@@ -142,4 +141,5 @@ export function playMusic(activeAudio, audio, fftSize, playBtn) {
     snail.style.visibility = "hidden";
     // setButton("play");
   }
+  return audio;
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-const FolderInfo = ({ currentActive }) => {
+import { useSelector } from "react-redux";
+const FolderInfo = () => {
   const [data, setData] = useState(null);
   const [format, setFormat] = useState(null);
   const [title, settitle] = useState(null);
@@ -12,11 +13,11 @@ const FolderInfo = ({ currentActive }) => {
   const audioPlayer = useRef(null);
 
   let audio = new Audio();
-
+  const song = useSelector((state) => state.currentSong);
+  // console.log(song[1].src);
+  audio = song[1];
+  let currentActive = song;
   useEffect(() => {
-    if (currentActive[0]) {
-      audio = currentActive[1];
-    }
     // console.log(0);
     audio.addEventListener(
       "loadeddata",
@@ -70,7 +71,7 @@ const FolderInfo = ({ currentActive }) => {
         clearInterval(tree);
       }
     }, 500);
-    console.log(111111);
+    // console.log(111111);
     function getTimeCodeFromNum(num) {
       let seconds = parseInt(num);
       let minutes = parseInt(seconds / 60);
@@ -85,31 +86,24 @@ const FolderInfo = ({ currentActive }) => {
       ).padStart(2, 0)}`;
     }
 
+    const jsmediatags = window.jsmediatags;
+    let getTags = async function (audio) {
+      await jsmediatags.read(audio, {
+        onSuccess: function (tag) {
+          settitle(tag.tags.title);
+          setartist(tag.tags.artist);
+          setalbum(tag.tags.album);
+          setgenre(tag.tags.genre);
+        },
+        onError: function (error) {
+          console.log(error);
+        },
+      });
+    };
     if (currentActive[0]) {
-      const jsmediatags = window.jsmediatags;
-      const song = new Audio();
-      song.src = currentActive[1].src;
-      let getTags = async function (audio) {
-        await jsmediatags.read(audio, {
-          onSuccess: function (tag) {
-            settitle(tag.tags.title);
-            setartist(tag.tags.artist);
-            setalbum(tag.tags.album);
-            setgenre(tag.tags.genre);
-          },
-          onError: function (error) {
-            console.log(error);
-          },
-        });
-      };
-      if (act) {
-        getTags(song.src);
-        setAct(false);
-      }
+      getTags(currentActive[1].src);
     }
   }, [currentActive]);
-  if (ready) {
-  }
 
   return (
     <div className="current-song" style={{ opacity: currentActive[0] ? 1 : 0 }}>

@@ -1,20 +1,19 @@
 import axios from "axios";
-import { useState, useEffect, useRef, useContext, memo } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { playMusic } from "../helpers/helper";
-import { Music } from "../App";
+import { connect } from "react-redux";
 
-const Item = memo(({ name, active }) => {
+const Item = ({ name, add, setCurrent }) => {
   const [title, settitle] = useState(null);
   const [artist, setartist] = useState(null);
   const [ready, setReady] = useState(false);
-  const [currentActive, setCurrent] = active;
   const listItem = useRef(null);
-  const [oldAud, setoldAud] = useContext(Music);
 
   useEffect(() => {
     const jsmediatags = window.jsmediatags;
     const song = new Audio();
     song.src = name;
+    const snail = document.querySelector("#snail");
     let getTags = function (audio) {
       jsmediatags.read(audio, {
         onSuccess: function (tag) {
@@ -36,14 +35,17 @@ const Item = memo(({ name, active }) => {
       "click",
       () => {
         if (!activeAudioSecond) {
+          console.log("render");
           playMusic(false, song, 512, listItem.current);
           activeAudio = true;
           activeAudioSecond = true;
         } else {
+          console.log("Act render");
           playMusic(true, song, 512, listItem.current);
         }
+
         setCurrent([!status, song, listItem.current]);
-        setoldAud(song);
+        add([song, listItem.current]);
       },
       false
     );
@@ -64,5 +66,17 @@ const Item = memo(({ name, active }) => {
       </div>
     </div>
   );
-});
-export default Item;
+};
+const mapStateToProps = (state) => {
+  return {
+    songArr: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    add: (el) => dispatch({ type: "ADD_SONG", payload: el }),
+    setCurrent: (el) => dispatch({ type: "ADD_PLAY", payload: el }),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Item);

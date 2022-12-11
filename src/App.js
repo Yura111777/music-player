@@ -1,11 +1,11 @@
 import "./App.css";
 import "./scss/style.scss";
 import React from "react";
-import { useState, createContext, useEffect } from "react";
+import { useState } from "react";
 import Canvas from "./components/canvas";
 import Item from "./components/item";
 import FolderInfo from "./components/playerBlock";
-export const Music = createContext(null);
+
 function App({ songArray }) {
   const [list, setList] = useState([
     `${process.env.PUBLIC_URL}/music/001.mp3`,
@@ -30,37 +30,19 @@ function App({ songArray }) {
     `${process.env.PUBLIC_URL}/music/20.mp3`,
   ]);
   const [currentActive, setCurrent] = useState(false);
-  const [old, setOld] = useState(null);
-
-  useEffect(() => {
-    if (old !== null) {
-      songArray.push(old);
-      console.log(songArray);
-      const newSongArr = songArray.filter((el) => el !== old);
-      console.log(songArray);
-      if (newSongArr.length) {
-        console.log(newSongArr);
-        newSongArr.forEach((el) => el.pause());
-      }
-      if (songArray.length > 1) {
-        songArray.splice(0, 1);
-      }
-    }
-  }, [old]);
   return (
     <div className="App">
       <audio controls id="audio" type="audio/mp3" hidden></audio>
 
       <Canvas src={list} currentActive={currentActive} />
-      <Music.Provider value={[old, setOld]}>
-        <div className="list-music  ">
-          {list.map((el) => {
-            return (
-              <Item key={el} name={el} active={[currentActive, setCurrent]} />
-            );
-          })}
-        </div>
-      </Music.Provider>
+
+      <div className="list-music  ">
+        {list.map((el) => {
+          return (
+            <Item key={el} name={el} active={[currentActive, setCurrent]} />
+          );
+        })}
+      </div>
 
       <FolderInfo currentActive={currentActive} />
     </div>
