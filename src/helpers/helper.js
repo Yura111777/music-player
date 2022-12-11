@@ -1,4 +1,4 @@
-export function playMusic(activeAudio, audio, fftSize, playBtn, playBtn2) {
+export function playMusic(activeAudio, audio, fftSize, playBtn) {
   let dataArray;
   let audioContext;
   let audioSource;
@@ -71,7 +71,6 @@ export function playMusic(activeAudio, audio, fftSize, playBtn, playBtn2) {
   };
 
   createBars();
-  const audio1 = document.querySelector("#audio");
 
   const getSamples = () => {
     analyzerMusic.getByteTimeDomainData(dataArray);
@@ -127,25 +126,20 @@ export function playMusic(activeAudio, audio, fftSize, playBtn, playBtn2) {
   }
 
   if (audio.paused) {
-    console.log(playBtn);
+    console.log(12);
     playBtn.classList.remove("play");
     playBtn.classList.add("pause");
 
-    playBtn2.classList.remove("play");
-    playBtn2.classList.add("pause");
     audio.play();
     snail.style.visibility = "visible";
     // setButton("pause");
   } else {
+    console.log(11);
     playBtn.classList.remove("pause");
     playBtn.classList.add("play");
 
-    playBtn2.classList.remove("pause");
-    playBtn2.classList.add("play");
     audio.pause();
     snail.style.visibility = "hidden";
     // setButton("play");
   }
-
-  return audio;
 }

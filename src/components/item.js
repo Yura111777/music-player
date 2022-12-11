@@ -1,13 +1,16 @@
 import axios from "axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext, memo } from "react";
 import { playMusic } from "../helpers/helper";
-const Item = ({ name, active }) => {
+import { Music } from "../App";
+
+const Item = memo(({ name, active }) => {
   const [title, settitle] = useState(null);
   const [artist, setartist] = useState(null);
   const [ready, setReady] = useState(false);
   const [currentActive, setCurrent] = active;
   const listItem = useRef(null);
-  const [classButton, setButton] = useState("play");
+  const [oldAud, setoldAud] = useContext(Music);
+
   useEffect(() => {
     const jsmediatags = window.jsmediatags;
     const song = new Audio();
@@ -28,23 +31,23 @@ const Item = ({ name, active }) => {
     let activeAudio = false;
     let activeAudioSecond = false;
     let status = false;
-    let playbutton = document.querySelector(".toggle-play");
 
     listItem.current.addEventListener(
       "click",
       () => {
         if (!activeAudioSecond) {
-          playMusic(false, song, 512, listItem.current, playbutton);
+          playMusic(false, song, 512, listItem.current);
           activeAudio = true;
           activeAudioSecond = true;
         } else {
-          playMusic(true, song, 512, listItem.current, playbutton);
+          playMusic(true, song, 512, listItem.current);
         }
         setCurrent([!status, song, listItem.current]);
+        setoldAud(song);
       },
       false
     );
-  }, []);
+  }, [name]);
 
   return (
     <div className="list-item">
@@ -61,5 +64,5 @@ const Item = ({ name, active }) => {
       </div>
     </div>
   );
-};
+});
 export default Item;

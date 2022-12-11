@@ -17,7 +17,7 @@ const FolderInfo = ({ currentActive }) => {
     if (currentActive[0]) {
       audio = currentActive[1];
     }
-    console.log(0);
+    // console.log(0);
     audio.addEventListener(
       "loadeddata",
       () => {
@@ -62,7 +62,7 @@ const FolderInfo = ({ currentActive }) => {
         (audio.currentTime / audio.duration) * 100 + "%";
       audioPlayer.current.querySelector(".time .current").textContent =
         getTimeCodeFromNum(audio.currentTime);
-      console.log(progressBar.offsetWidth / 100 + "%");
+      // console.log(progressBar.offsetWidth / 100 + "%");
       if (progressBar.offsetWidth / 100 + "%" > "3.48%") {
         let playBtn2 = document.querySelector(".toggle-play");
         playBtn2.classList.remove("pause");
