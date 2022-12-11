@@ -14,8 +14,7 @@ const filterTracks = (state, old) => {
   if (newSongArr.length) {
     newSongArr.forEach((el) => {
       el[0].pause();
-      el[0].currentTime = 0;
-
+      el[0].currentTime = 0.1;
       el[1].classList.remove("pause");
       el[1].classList.add("play");
     });
@@ -23,11 +22,13 @@ const filterTracks = (state, old) => {
   if (state.songArray.length > 1) {
     state.songArray.splice(0, 1);
   }
+  // state.songArray.forEach((el) => (el[0].played = true));
   return state.songArray;
 };
 let initialState = {
   songArray: [],
   currentSong: [null, new Audio(), null],
+  act: false,
 };
 const songReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -41,6 +42,12 @@ const songReducer = (state = initialState, action) => {
       return {
         ...state,
         currentSong: action.payload,
+      };
+      break;
+    case "ADD_ACT":
+      return {
+        ...state,
+        act: action.payload,
       };
       break;
     default:

@@ -38,9 +38,7 @@ function App({ songArray }) {
 
       <div className="list-music  ">
         {list.map((el) => {
-          return (
-            <Item key={el} name={el} active={[currentActive, setCurrent]} />
-          );
+          return <Item key={el} name={el} />;
         })}
       </div>
 

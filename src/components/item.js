@@ -11,7 +11,7 @@ const Item = ({ name, add, setCurrent }) => {
 
   useEffect(() => {
     const jsmediatags = window.jsmediatags;
-    const song = new Audio();
+    let song = new Audio();
     song.src = name;
     const snail = document.querySelector("#snail");
     let getTags = function (audio) {
@@ -27,25 +27,25 @@ const Item = ({ name, add, setCurrent }) => {
     };
     getTags(song.src);
 
-    let activeAudio = false;
     let activeAudioSecond = false;
     let status = false;
+    let aud;
 
     listItem.current.addEventListener(
       "click",
       () => {
-        if (!activeAudioSecond) {
-          console.log("render");
-          playMusic(false, song, 512, listItem.current);
-          activeAudio = true;
+        add([song, listItem.current]);
+        setCurrent([!status, song, listItem.current]);
+
+        if (!activeAudioSecond || song.currentTime === 0.1) {
+          aud = playMusic(false, song, 512, listItem.current, song.currentTime);
           activeAudioSecond = true;
+          song = aud;
+          add([song, listItem.current]);
         } else {
           console.log("Act render");
           playMusic(true, song, 512, listItem.current);
         }
-
-        setCurrent([!status, song, listItem.current]);
-        add([song, listItem.current]);
       },
       false
     );
@@ -69,7 +69,7 @@ const Item = ({ name, add, setCurrent }) => {
 };
 const mapStateToProps = (state) => {
   return {
-    songArr: state,
+    act: state,
   };
 };
 
@@ -77,6 +77,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     add: (el) => dispatch({ type: "ADD_SONG", payload: el }),
     setCurrent: (el) => dispatch({ type: "ADD_PLAY", payload: el }),
+    addAct: (el) => dispatch({ type: "ADD_ACT", payload: el }),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Item);

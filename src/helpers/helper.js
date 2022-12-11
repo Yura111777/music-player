@@ -1,4 +1,10 @@
-export function playMusic(activeAudio, audio, fftSize, playBtn) {
+export function playMusic(
+  activeAudio,
+  audio,
+  fftSize,
+  playBtn,
+  played = false
+) {
   let dataArray;
   let audioContext;
   let audioSource;
@@ -111,8 +117,13 @@ export function playMusic(activeAudio, audio, fftSize, playBtn) {
     requestAnimationFrame(animate);
   };
   animate();
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
   if (!activeAudio) {
+    if (played) {
+      // alert(1);
+      audio = new Audio(audio.src);
+    }
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
     audioSource = audioContext.createMediaElementSource(audio);
     analyzerMusic = audioContext.createAnalyser();
     audioSource.connect(analyzerMusic);
@@ -141,5 +152,6 @@ export function playMusic(activeAudio, audio, fftSize, playBtn) {
     snail.style.visibility = "hidden";
     // setButton("play");
   }
+
   return audio;
 }
