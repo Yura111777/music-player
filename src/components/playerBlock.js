@@ -22,73 +22,6 @@ const FolderInfo = ({ add, setCurrent, list }) => {
   audio = song[1];
   let currentActive = song;
   useEffect(() => {
-    audio.addEventListener(
-      "loadeddata",
-      () => {
-        audioPlayer.current.querySelector(".time .length").textContent =
-          getTimeCodeFromNum(audio.duration);
-        audio.volume = 0.75;
-      },
-      false
-    );
-
-    const timeline = audioPlayer.current.querySelector(".timeline");
-    timeline.addEventListener(
-      "click",
-      (e) => {
-        const timelineWidth = window.getComputedStyle(timeline).width;
-        const timeToSeek =
-          (e.offsetX / parseInt(timelineWidth)) * audio.duration;
-        audio.currentTime = timeToSeek;
-      },
-      false
-    );
-
-    const volumeSlider = audioPlayer.current.querySelector(
-      ".controls .volume-slider"
-    );
-    volumeSlider.addEventListener(
-      "click",
-      (e) => {
-        const sliderWidth = window.getComputedStyle(volumeSlider).width;
-        const newVolume = e.offsetX / parseInt(sliderWidth);
-        audio.volume = newVolume;
-        audioPlayer.current.querySelector(
-          ".controls .volume-percentage"
-        ).style.width = newVolume * 100 + "%";
-      },
-      false
-    );
-
-    const setIntervalFunction = () => {
-      const progressBar = audioPlayer.current.querySelector(".progress");
-      progressBar.style.width =
-        (audio.currentTime / audio.duration) * 100 + "%";
-      audioPlayer.current.querySelector(".time .current").textContent =
-        getTimeCodeFromNum(audio.currentTime);
-      // console.log(progressBar.offsetWidth / 100 + "%");
-      if (progressBar.offsetWidth / 100 + "%" > "3.48%") {
-        let playBtn2 = document.querySelector(".toggle-play");
-        playBtn2.classList.remove("pause");
-        playBtn2.classList.add("play");
-        clearInterval(tree);
-      }
-    };
-    let tree = setInterval(setIntervalFunction, 500);
-    function getTimeCodeFromNum(num) {
-      let seconds = parseInt(num);
-      let minutes = parseInt(seconds / 60);
-      seconds -= minutes * 60;
-      const hours = parseInt(minutes / 60);
-      minutes -= hours * 60;
-
-      if (hours === 0)
-        return `${minutes}:${String(seconds % 60).padStart(2, 0)}`;
-      return `${String(hours).padStart(2, 0)}:${minutes}:${String(
-        seconds % 60
-      ).padStart(2, 0)}`;
-    }
-
     const jsmediatags = window.jsmediatags;
     let getTags = async function (audio) {
       await jsmediatags.read(audio, {
@@ -105,6 +38,73 @@ const FolderInfo = ({ add, setCurrent, list }) => {
     };
     if (currentActive[0]) {
       getTags(currentActive[1].src);
+
+      audio.addEventListener(
+        "loadeddata",
+        () => {
+          audioPlayer.current.querySelector(".time .length").textContent =
+            getTimeCodeFromNum(audio.duration);
+          audio.volume = 0.75;
+        },
+        false
+      );
+
+      const timeline = audioPlayer.current.querySelector(".timeline");
+      timeline.addEventListener(
+        "click",
+        (e) => {
+          const timelineWidth = window.getComputedStyle(timeline).width;
+          const timeToSeek =
+            (e.offsetX / parseInt(timelineWidth)) * audio.duration;
+          audio.currentTime = timeToSeek;
+        },
+        false
+      );
+
+      const volumeSlider = audioPlayer.current.querySelector(
+        ".controls .volume-slider"
+      );
+      volumeSlider.addEventListener(
+        "click",
+        (e) => {
+          const sliderWidth = window.getComputedStyle(volumeSlider).width;
+          const newVolume = e.offsetX / parseInt(sliderWidth);
+          audio.volume = newVolume;
+          audioPlayer.current.querySelector(
+            ".controls .volume-percentage"
+          ).style.width = newVolume * 100 + "%";
+        },
+        false
+      );
+
+      const setIntervalFunction = () => {
+        const progressBar = audioPlayer.current.querySelector(".progress");
+        progressBar.style.width =
+          (audio.currentTime / audio.duration) * 100 + "%";
+        audioPlayer.current.querySelector(".time .current").textContent =
+          getTimeCodeFromNum(audio.currentTime);
+        // console.log(progressBar.offsetWidth / 100 + "%");
+        if (progressBar.offsetWidth / 100 + "%" > "3.48%") {
+          let playBtn2 = document.querySelector(".toggle-play");
+          playBtn2.classList.remove("pause");
+          playBtn2.classList.add("play");
+          clearInterval(tree);
+        }
+      };
+      let tree = setInterval(setIntervalFunction, 500);
+      function getTimeCodeFromNum(num) {
+        let seconds = parseInt(num);
+        let minutes = parseInt(seconds / 60);
+        seconds -= minutes * 60;
+        const hours = parseInt(minutes / 60);
+        minutes -= hours * 60;
+
+        if (hours === 0)
+          return `${minutes}:${String(seconds % 60).padStart(2, 0)}`;
+        return `${String(hours).padStart(2, 0)}:${minutes}:${String(
+          seconds % 60
+        ).padStart(2, 0)}`;
+      }
     }
     let playButtons = document.querySelectorAll(".music-box .toggle-play");
     setReady(playButtons);
