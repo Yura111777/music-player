@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createStore } from "redux";
-import { Provider, connect, useSelector, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 
 const filterTracks = (state, old) => {
   state.songArray.push(old);
@@ -19,10 +19,11 @@ const filterTracks = (state, old) => {
       el[1].classList.add("play");
     });
   }
-  if (state.songArray.length > 1) {
+  console.log(newSongArr);
+  if (state.songArray.length > 3) {
     state.songArray.splice(0, 1);
   }
-  // state.songArray.forEach((el) => (el[0].played = true));
+
   return state.songArray;
 };
 let initialState = {

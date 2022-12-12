@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSelector } from "react-redux";
-const FolderInfo = () => {
+import { playMusic } from "../helpers/helper";
+import { connect } from "react-redux";
+const FolderInfo = ({ add, setCurrent, list }) => {
   const [data, setData] = useState(null);
   const [format, setFormat] = useState(null);
   const [title, settitle] = useState(null);
@@ -11,6 +13,8 @@ const FolderInfo = () => {
   const [act, setAct] = useState(true);
   const audio1 = useRef(null);
   const audioPlayer = useRef(null);
+  const left = useRef(null);
+  const right = useRef(null);
 
   let audio = new Audio();
   const song = useSelector((state) => state.currentSong);
@@ -18,7 +22,6 @@ const FolderInfo = () => {
   audio = song[1];
   let currentActive = song;
   useEffect(() => {
-    // console.log(0);
     audio.addEventListener(
       "loadeddata",
       () => {
@@ -57,7 +60,7 @@ const FolderInfo = () => {
       false
     );
 
-    const tree = setInterval(() => {
+    const setIntervalFunction = () => {
       const progressBar = audioPlayer.current.querySelector(".progress");
       progressBar.style.width =
         (audio.currentTime / audio.duration) * 100 + "%";
@@ -70,8 +73,8 @@ const FolderInfo = () => {
         playBtn2.classList.add("play");
         clearInterval(tree);
       }
-    }, 500);
-    // console.log(111111);
+    };
+    let tree = setInterval(setIntervalFunction, 500);
     function getTimeCodeFromNum(num) {
       let seconds = parseInt(num);
       let minutes = parseInt(seconds / 60);
@@ -103,12 +106,71 @@ const FolderInfo = () => {
     if (currentActive[0]) {
       getTags(currentActive[1].src);
     }
+    let playButtons = document.querySelectorAll(".music-box .toggle-play");
+    setReady(playButtons);
   }, [currentActive]);
+  let status = false;
+  const getCurrentButton = (track, direction = null) => {
+    if (track !== undefined) {
+      const index = list.findIndex(
+        (el) => `http://localhost:3000${el}` === track.src
+      );
 
+      if (index > 0) {
+        if (index + 1 > 2 && direction !== "left") {
+          return ready[0];
+        }
+        if (direction === "left") {
+          return ready[index - 1];
+        } else {
+          console.log(index);
+          return ready[index + 1];
+        }
+      }
+      if (index === 0) {
+        if (direction === "left") {
+          return ready[2];
+        } else {
+          return ready[index + 1];
+        }
+      }
+    }
+  };
+  const getNextTrack = (track, i) => {
+    if (track !== undefined) {
+      let audio = new Audio();
+      const index = list.findIndex(
+        (el) => `http://localhost:3000${el}` === track.src
+      );
+
+      if (index >= 0) {
+        if (index + i > 2) {
+          audio.src = list[0];
+          return audio;
+        }
+        if (index + i < 0) {
+          audio.src = list[2];
+          return audio;
+        }
+        audio.src = list[index + i];
+        return audio;
+      }
+    }
+  };
+
+  const musicSwith = (direction, i, audio) => {
+    audio.currentTime = 0;
+    let listItem = getCurrentButton(audio, direction);
+    audio = getNextTrack(audio, i);
+    add([audio, listItem]);
+    setCurrent([!status, audio, listItem]);
+    playMusic(false, audio, 512, listItem);
+    audioPlayer.current.querySelector(".progress").style.width = 0;
+  };
   return (
     <div className="current-song" style={{ opacity: currentActive[0] ? 1 : 0 }}>
       <audio ref={audio1} controls id="audio" type="audio/mp3" hidden></audio>
-      <div className="music-box audio-player">
+      <div className="music-box-info audio-player">
         <div className="info">
           <h2 className="info-title">{title}</h2>
           <h2 className="info-artist">{artist}</h2>
@@ -123,8 +185,14 @@ const FolderInfo = () => {
         </div>
         <div className="controls">
           <div className="play-container">
-            <div className="icono-caretLeftSquare"></div>
-            <div className="icono-caretRightSquare"></div>
+            <div
+              className="icono-caretLeftSquare"
+              onClick={() => musicSwith("left", -1, song[1])}
+            ></div>
+            <div
+              className="icono-caretRightSquare"
+              onClick={() => musicSwith(null, 1, song[1])}
+            ></div>
           </div>
           <div className="time">
             <div className="current">0:00</div>
@@ -147,5 +215,17 @@ const FolderInfo = () => {
     </div>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    act: state,
+  };
+};
 
-export default FolderInfo;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    add: (el) => dispatch({ type: "ADD_SONG", payload: el }),
+    setCurrent: (el) => dispatch({ type: "ADD_PLAY", payload: el }),
+    addAct: (el) => dispatch({ type: "ADD_ACT", payload: el }),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(FolderInfo);
